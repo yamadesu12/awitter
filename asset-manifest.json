@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/awitter/static/css/main.574b2abe.css",
-    "main.js": "/awitter/static/js/main.bd933d85.js",
+    "main.js": "/awitter/static/js/main.4cd367d7.js",
     "index.html": "/awitter/index.html",
     "main.574b2abe.css.map": "/awitter/static/css/main.574b2abe.css.map",
-    "main.bd933d85.js.map": "/awitter/static/js/main.bd933d85.js.map"
+    "main.4cd367d7.js.map": "/awitter/static/js/main.4cd367d7.js.map"
   },
   "entrypoints": [
     "static/css/main.574b2abe.css",
-    "static/js/main.bd933d85.js"
+    "static/js/main.4cd367d7.js"
   ]
 }

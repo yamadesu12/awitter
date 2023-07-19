@@ -1,99 +1,139 @@
-import { dbService,storageService} from "fbase";
+//탐라
+import { dbService, storageService } from "fbase";
 import { useEffect, useState } from "react";
 import Aweet from "components/Aweet";
-import { v4 as uuidv4} from "uuid";
-
+import { v4 as uuidv4 } from "uuid";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const Home = ({ userObj }) => {
-  
+  const [aweet, setAweet] = useState("");
+  const [aweets, setAweets] = useState([]);
+  const [attachment, setAttachment] = useState("");
 
-    const [aweet, setAweet] = useState("");
-    const [aweets, setAweets] = useState([]);
-    const [attachment, setAttachment] = useState("");
+  useEffect(() => {
+    dbService
+      .collection("aweets")
+      .orderBy("createdAt", "desc")
+      .onSnapshot((snapshot) => {
+        const newArray = snapshot.docs.map((document) => ({
+          id: document.id,
+          ...document.data(),
+        }));
+        setAweets(newArray);
+      });
+  }, []);
 
-    useEffect(() => {
-        dbService.collection("aweets").onSnapshot((snapshot) => {
-          const newArray = snapshot.docs.map((document) => ({
-            id: document.id,
-            ...document.data(),
-          }));
-          const sortedArray = newArray.sort((a, b) => b.createdAt - a.createdAt); // createdAt 속성을 기준으로 내림차순 정렬
-          setAweets(sortedArray);
-        });
-      }, []);
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    if (aweet === "") {
+      return;
+    }
+    let attachmentUrl = "";
+    if (attachment !== "") {
+      const attachmentRef = storageService
+        .ref()
+        .child(`${userObj.uid}/${uuidv4()}`);
+      const response = await attachmentRef.putString(attachment, "data_url");
+      attachmentUrl = await response.ref.getDownloadURL();
+    }
+    await dbService.collection("aweets").add({
+      text: aweet,
+      createdAt: Date.now(),
+      creatorId: userObj.uid,
+      attachmentUrl,
+    });
+    setAweet("");
+    setAttachment("");
+  };
 
-   
+  const onChange = (event) => {
+    event.preventDefault();
+    const {
+      target: { value },
+    } = event;
+    setAweet(value);
+  };
 
-    const onSubmit= async (event) => {
-        event.preventDefault();
-        /*
-        await dbService.collection("aweets").add({
-            text: aweet,
-            createdAt:Date.now(),
-            creatorId: userObj.uid,
-        });
-        setAweet("");*/
-        const fileRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`);
-
-        const response = await fileRef.putString(attachment, "data_url");
-        console.log(response);
+  const onFileChange = (event) => {
+    const {
+      target: { files },
+    } = event;
+    const theFile = files[0];
+    const reader = new FileReader();
+    reader.onloadend = (finishedEvent) => {
+      const {
+        currentTarget: { result },
+      } = finishedEvent;
+      setAttachment(result);
     };
 
-    const onChange = (event) => {
-        event.preventDefault();
-        const{
-            target: {value },
-        }= event;
-        setAweet(value);
-        };
-    
-        const onFileChange = (event) => {
-            const {
-                target: {files},
-            } = event ;
-            const theFile = files[0];
-            const reader = new FileReader();
-            reader.onloadend = (finishedEvent) => {
-                const {
-                    currentTarget : {result},
-                } = finishedEvent;
-                setAttachment(result);
-                
-            };
-            reader.readAsDataURL(theFile);
-        };
+    if (Boolean(theFile)) {
+      reader.readAsDataURL(theFile);
+    }
+  };
 
-const onClearAttachment = () => setAttachment("");
+  const onClearAttachment = () => setAttachment("");
 
-return (
-    <>
-    <form onSubmit = {onSubmit}>
+  return (
+    <div className="container" style={{ marginTop: "30px" }}>
+      <form onSubmit={onSubmit} className="factoryForm">
+        <div className="factoryInput__container">
         <input
-        value = {aweet}
-        onChange={onChange}
-        type = "text"
-        placeholder="무슨 일이 일어나고 있나요?"
-        maxLengh={120}
-        />
-        <input type="file" accept="image/*" onChange={onFileChange}/>
-        <input type = "submit" value = "Aweet"/>
-        {attachment && ( 
-        <div>
-            <img src={attachment} width="50px" height="50px" />
-            <button onClick={onClearAttachment}>취소</button>
+  className="factoryInput__input wider"
+  value={aweet}
+  onChange={onChange}
+  type="text"
+  placeholder="무슨일이 일어나고 있나요?"
+  maxLength={130}
+  style={{ borderColor: "#FFCCE5", fontSize: "16px" }}
+/>
+          <input
+            type="submit"
+            value="&rarr;"
+            className="factoryInput__arrow"
+            style={{ backgroundColor: "#FFCCE5", width: "40px",}}
+          />
         </div>
-)}
-    </form>
-    <div>
-        {aweets.map((aweet)=> (
-          <Aweet key = {aweet.id}
-           aweetObj={aweet}
-           isOwner = {aweet.creatorId === userObj.uid}
-           />
-                ))}
-                </div>
-                </>
-);
+        <label htmlFor="attach-file" className="factoryInput__label">
+          <span style={{ color: "#FFCCE5" }}>사진 추가 </span>
+          <FontAwesomeIcon icon={faPlus} color={"#FFCCE5"} />
+        </label>
+        <input
+          id="attach-file"
+          type="file"
+          accept="image/*"
+          onChange={onFileChange}
+          style={{
+            opacity: 0,
+          }}
+        />
+        {attachment && (
+          <div className="factoryForm__attachment">
+            <img
+              src={attachment}
+              style={{
+                backgroundImage: attachment,
+              }}
+            />
+            <div className="factoryForm__clear" onClick={onClearAttachment}>
+              <span>Remove</span>
+              <FontAwesomeIcon icon={faTimes} />
+            </div>
+          </div>
+        )}
+      </form>
+      <div style={{ marginTop: 30 }}>
+        {aweets.map((aweet) => (
+          <Aweet
+            key={aweet.id}
+            aweetObj={aweet}
+            isOwner={aweet.creatorId === userObj.uid}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Home;

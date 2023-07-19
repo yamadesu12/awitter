@@ -1,5 +1,12 @@
+//로그인창
 import { authService,firebaseInstance } from "fbase";
 import {useState} from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faGoogle,
+  faGithub,
+} from "@fortawesome/free-brands-svg-icons";
+import { faSchool } from "@fortawesome/free-solid-svg-icons";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -55,8 +62,13 @@ const Auth = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={onSubmit}>
+    <div className="authContainer">
+      <FontAwesomeIcon
+      icon={faSchool}
+      color={"#FFCCE5"}
+      size="3x"
+      style={{marginBottom : 30}}/>
+      <form onSubmit={onSubmit}className="container">
         <input
           name="email"
           type="email"
@@ -64,6 +76,7 @@ const Auth = () => {
           required
           value={email}
           onChange={onChange}
+          className="authInput"
         />
         <input
           name="password"
@@ -72,19 +85,20 @@ const Auth = () => {
           required
           value={password}
           onChange={onChange}
+          className="authInput"
         />
-        <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
-        {error}
+        <input type="submit" value={newAccount ? "회원가입" : "로그인"} className="authInput authSubmit"/>
+        {error && <span className="authError">{error}</span>}
       </form>
-      <span onClick={toggleAccount}>
-        {newAccount ? "Sign In" : "Create Account"}
+      <span onClick={toggleAccount}className="authSwitch">
+        {newAccount ? "로그인 하러가기" : "회원가입 하러가기"}
       </span>
-      <div>
-        <button onClick={onSocialClick} name="google">
-          Continue with Google
+      <div className="authBtns">
+        <button onClick={onSocialClick} name="google"className="authBtn">
+          구글로 로그인 <FontAwesomeIcon icon={faGoogle} />
         </button>
-        <button onClick={onSocialClick} name="github">
-          Continue with Github
+        <button onClick={onSocialClick} name="github"className="authBtn">
+          깃허브로 로그인 <FontAwesomeIcon icon={faGithub} />
         </button>
       </div>
     </div>

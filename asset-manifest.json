@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/yamadesu12/awitter/static/css/main.574b2abe.css",
-    "main.js": "/yamadesu12/awitter/static/js/main.1ebabf07.js",
-    "index.html": "/yamadesu12/awitter/index.html",
-    "main.574b2abe.css.map": "/yamadesu12/awitter/static/css/main.574b2abe.css.map",
-    "main.1ebabf07.js.map": "/yamadesu12/awitter/static/js/main.1ebabf07.js.map"
+    "main.css": "/awitter/static/css/main.574b2abe.css",
+    "main.js": "/awitter/static/js/main.3a8fd958.js",
+    "index.html": "/awitter/index.html",
+    "main.574b2abe.css.map": "/awitter/static/css/main.574b2abe.css.map",
+    "main.3a8fd958.js.map": "/awitter/static/js/main.3a8fd958.js.map"
   },
   "entrypoints": [
     "static/css/main.574b2abe.css",
-    "static/js/main.1ebabf07.js"
+    "static/js/main.3a8fd958.js"
   ]
 }
